@@ -31,7 +31,8 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
 " Colorscheme plug
-Plug 'overcache/NeoSolarized'
+" Plug 'overcache/NeoSolarized'
+Plug 'morhetz/gruvbox'
 
 "Git
 Plug 'airblade/vim-gitgutter'
@@ -43,8 +44,8 @@ call plug#end()
 " Set colors
 set termguicolors
 set background=dark
-colorscheme NeoSolarized
-let g:neosolarized_contrast = "high"
+let g:gruvbox_contrast_dark='medium'
+colorscheme gruvbox
 " Plugin settings
 let g:secure_modelines_allowed_items = [
                 \ "textwidth",   "tw",
@@ -58,10 +59,9 @@ let g:secure_modelines_allowed_items = [
                 \ "rightleft",   "rl",   "norightleft", "norl",
 		\ "colorcolumn",
                 \ ]
-
 " Lightline
 let g:lightline = {
-      \ 'colorscheme': 'solarized',           
+      \ 'colorscheme': 'gruvbox',           
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
@@ -190,7 +190,6 @@ set diffopt+=iwhite " No whitespace in vimdiff
 " Make diffing better: https://vimways.org/2018/the-power-of-diff/
 set diffopt+=algorithm:patience
 set diffopt+=indent-heuristic
-set colorcolumn=80 " and give me a colored column
 set showcmd " Show (partial) command in status line.
 set mouse=a " Enable mouse usage (all modes) in terminals
 set shortmess+=c " don't give |ins-completion-menu| messages.
@@ -225,6 +224,3 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>grn <Plug>(coc-rename)
 nmap <leader>gt <Plug>(coc-type-definition)
 nmap <leader>gre <Plug>(coc-references)
-
-" Follow Rust code style rules
-au Filetype rust set colorcolumn=100
