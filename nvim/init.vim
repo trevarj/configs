@@ -7,11 +7,10 @@ call plug#begin()
 Plug 'ciaranm/securemodelines'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-commentary'
-Plug 'jiangmiao/auto-pairs'
 
 " GUI enhancements
 Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
 Plug 'machakann/vim-highlightedyank'
 Plug 'andymass/vim-matchup'
 
@@ -29,7 +28,8 @@ Plug 'stephpy/vim-yaml'
 Plug 'rust-lang/rust.vim'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-
+Plug 'tpope/vim-commentary'
+Plug 'jiangmiao/auto-pairs'
 " Colorscheme plug
 " Plug 'overcache/NeoSolarized'
 Plug 'morhetz/gruvbox'
@@ -60,23 +60,26 @@ let g:secure_modelines_allowed_items = [
 		\ "colorcolumn",
                 \ ]
 " Lightline
-let g:lightline = {
-      \ 'colorscheme': 'gruvbox',           
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename',
-      \   'cocstatus': 'coc#status'
-      \ },
-    \ }
+let g:lightline#bufferline#show_number  = 0
+let g:lightline#bufferline#shorten_path = 0
+let g:lightline#bufferline#unnamed      = '[No Name]'
+
+let g:lightline = {}
+let g:lightline.colorscheme = 'gruvbox'
+let g:lightline.active = {'left': [ [ 'mode', 'paste' ],[ 'cocstatus', 'readonly', 'filename', 'modified' ] ] }
+let g:lightline.component_function = {'filename': 'LightlineFilename', 'cocstatus': 'coc#status'}
+let g:lightline.tabline          = {'left': [['buffers']], 'right': []}
+
+" Enable bufferline
+let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+let g:lightline.component_type   = {'buffers': 'tabsel'}
+
 function! LightlineFilename()
-  return expand('%:t') !=# '' ? @% : '[No Name]'
+  return expand('%:t') !=# '' ? @% : '[new file]'
 endfunction
 
-" Use auocmd to force lightline update.
-autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+" Use autocmd to force lightline update.
+autocmd User BufWritePost,TextChanged,TextChangedI,CocStatusChange,CocDiagnosticChange * call lightline#update()
 
 
 " Use tab for trigger completion with characters ahead and navigate.
@@ -185,7 +188,7 @@ set lazyredraw
 set synmaxcol=500
 set laststatus=2
 set showtabline=2
-set number " Also show current absolute line
+set number
 set diffopt+=iwhite " No whitespace in vimdiff
 " Make diffing better: https://vimways.org/2018/the-power-of-diff/
 set diffopt+=algorithm:patience
@@ -205,6 +208,7 @@ inoremap <right> <nop>
 " Left and right can switch buffers
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
+nnoremap <leader>bd :bd<CR>
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
