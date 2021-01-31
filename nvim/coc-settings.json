@@ -1,0 +1,4 @@
+{
+	"rust-analyzer.hoverActions.linksInHover": true,
+	"coc.preferences.hoverTarget": "echo"
+}
