@@ -192,7 +192,8 @@ set diffopt+=indent-heuristic
 set showcmd " Show (partial) command in status line.
 set mouse=a " Enable mouse usage (all modes) in terminals
 set shortmess+=c " don't give |ins-completion-menu| messages.
-
+set cursorline
+set guicursor=a:block,i:blinkwait50-blinkon200-blinkoff150
 " No arrow keys --- force yourself to use the home row
 nnoremap <up> <nop>
 nnoremap <down> <nop>
