@@ -176,10 +176,8 @@ cnoremap %s/ %sm/
 " # GUI settings
 " =============================================================================
 set guioptions-=T " Remove toolbar
-set vb t_vb= " No more beeps
 set backspace=2 " Backspace over newlines
 set nofoldenable
-set ttyfast
 " https://github.com/vim/vim/issues/1735#issuecomment-383353563
 set lazyredraw
 set synmaxcol=500
