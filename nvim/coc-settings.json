@@ -1,4 +1,5 @@
 {
 	"rust-analyzer.hoverActions.linksInHover": true,
-	"coc.preferences.hoverTarget": "echo"
+	"diagnostic.virtualText": true,
+	"diagnostic.virtualTextCurrentLineOnly": false
 }

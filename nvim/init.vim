@@ -4,7 +4,6 @@ call plug#begin()
 " Make sure you use single quotes
 " Load plugins
 " VIM enhancements
-Plug 'ciaranm/securemodelines'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-sensible'
 
@@ -29,14 +28,14 @@ Plug 'rust-lang/rust.vim'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'tpope/vim-commentary'
-Plug 'jiangmiao/auto-pairs'
+" Plug 'jiangmiao/auto-pairs'
 " Colorscheme plug
 " Plug 'overcache/NeoSolarized'
 Plug 'morhetz/gruvbox'
 
 "Git
 Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-fugitive'
+" Plug 'tpope/vim-fugitive'
 
 " Initialize plugin system"
 call plug#end()
@@ -46,20 +45,9 @@ set termguicolors
 set background=dark
 let g:gruvbox_contrast_dark='medium'
 colorscheme gruvbox
-" Plugin settings
-let g:secure_modelines_allowed_items = [
-                \ "textwidth",   "tw",
-                \ "softtabstop", "sts",
-                \ "tabstop",     "ts",
-                \ "shiftwidth",  "sw",
-                \ "expandtab",   "et",   "noexpandtab", "noet",
-                \ "filetype",    "ft",
-                \ "foldmethod",  "fdm",
-                \ "readonly",    "ro",   "noreadonly", "noro",
-                \ "rightleft",   "rl",   "norightleft", "norl",
-		\ "colorcolumn",
-                \ ]
-" Lightline
+
+
+"Lightline
 let g:lightline#bufferline#show_number  = 0
 let g:lightline#bufferline#shorten_path = 0
 let g:lightline#bufferline#unnamed      = '[No Name]'
@@ -202,10 +190,24 @@ inoremap <down> <nop>
 inoremap <left> <nop>
 inoremap <right> <nop>
 
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h
+inoremap <A-j> <C-\><C-N><C-w>j
+inoremap <A-k> <C-\><C-N><C-w>k
+inoremap <A-l> <C-\><C-N><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+
 " Left and right can switch buffers
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
-nnoremap <leader>bd :bd<CR>
+nnoremap <leader>bd :bd!<CR>
+nnoremap <leader>w :bd!<CR>
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -225,3 +227,8 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>grn <Plug>(coc-rename)
 nmap <leader>gt <Plug>(coc-type-definition)
 nmap <leader>gre <Plug>(coc-references)
+
+" Terminal
+nnoremap <C-T> :split\|:term<CR>i
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-W> <C-\><C-n>:bd!<CR>
