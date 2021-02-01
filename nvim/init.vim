@@ -1,5 +1,4 @@
 set nocompatible
-filetype off
 call plug#begin()
 " Make sure you use single quotes
 " Load plugins
@@ -12,6 +11,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'machakann/vim-highlightedyank'
 Plug 'andymass/vim-matchup'
+Plug 'qpkorr/vim-bufkill'
 
 " Fuzzy finder
 Plug 'airblade/vim-rooter'
@@ -28,7 +28,6 @@ Plug 'rust-lang/rust.vim'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'tpope/vim-commentary'
-" Plug 'jiangmiao/auto-pairs'
 " Colorscheme plug
 " Plug 'overcache/NeoSolarized'
 Plug 'morhetz/gruvbox'
@@ -66,10 +65,6 @@ function! LightlineFilename()
   return expand('%:t') !=# '' ? @% : '[new file]'
 endfunction
 
-" Use autocmd to force lightline update.
-autocmd User BufWritePost,TextChanged,TextChangedI,CocStatusChange,CocDiagnosticChange * call lightline#update()
-
-
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
@@ -96,7 +91,7 @@ if executable('rg')
 endif
 
 " Open hotkeys
-map <C-p> :Files<CR>
+map <C-p> :GFiles<CR>
 nmap <leader>; :Buffers<CR>
 
 " rust
@@ -147,6 +142,17 @@ set incsearch
 set ignorecase
 set smartcase
 set gdefault
+
+" Esc
+nnoremap <A-q> <Esc>
+inoremap <A-q> <Esc>
+vnoremap <A-q> <Esc>
+snoremap <A-q> <Esc>
+xnoremap <A-q> <Esc>
+cnoremap <A-q> <C-c>
+onoremap <A-q> <Esc>
+lnoremap <A-q> <Esc>
+tnoremap <A-q> <Esc>
 
 " Search results centered please
 nnoremap <silent> n nzz
@@ -203,14 +209,18 @@ nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
+" Damn you
+cnoremap :Q! :q!
+cnoremap :Q :q
+cnoremap :W :w
 " Left and right can switch buffers
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
-nnoremap <leader>bd :bd!<CR>
-nnoremap <leader>w :bd!<CR>
+nnoremap <leader>bd :BD!<CR>
+nnoremap <leader>w :BD<CR>
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> K :call <SID>show_documentation(<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -231,4 +241,4 @@ nmap <leader>gre <Plug>(coc-references)
 " Terminal
 nnoremap <C-T> :split\|:term<CR>i
 tnoremap <Esc> <C-\><C-n>
-tnoremap <C-W> <C-\><C-n>:bd!<CR>
+tnoremap <C-W> <C-\><C-n>:BD!<CR>
