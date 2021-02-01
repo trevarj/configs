@@ -1,4 +1,5 @@
 set nocompatible
+filetype off
 call plug#begin()
 " Make sure you use single quotes
 " Load plugins
@@ -220,7 +221,7 @@ nnoremap <leader>bd :BD!<CR>
 nnoremap <leader>w :BD<CR>
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation(<CR>
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
