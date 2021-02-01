@@ -221,7 +221,7 @@ nnoremap <leader>bd :BD!<CR>
 nnoremap <leader>w :BD<CR>
 
 " Show actions available at this location
-nnoremap <silent> <space>a  :CocAction<cr>
+nnoremap <silent> <leader><space> :CocAction<cr>
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
