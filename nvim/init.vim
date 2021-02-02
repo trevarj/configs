@@ -36,6 +36,9 @@ Plug 'stephpy/vim-yaml'
 Plug 'rust-lang/rust.vim'
 Plug 'tpope/vim-commentary'
 
+" Semantics
+Plug 'jiangmiao/auto-pairs'
+
 call plug#end()
 
 syntax enable
@@ -77,14 +80,27 @@ let g:lightline#bufferline#unnamed      = '[No Name]'
 
 let g:lightline = {}
 let g:lightline.colorscheme = 'gruvbox'
-let g:lightline.active = {'left': [ [ 'mode', 'paste' ],[ 'cocstatus', 'readonly', 'filename', 'modified' ] ] }
-let g:lightline.component_function = {'filename': 'LightlineFilename', 'cocstatus': 'coc#status'}
+let g:lightline.active = {'left': [ [ 'mode', 'paste' ],[ 'lsp', 'readonly', 'filename', 'modified' ] ] }
+let g:lightline.component_function = {'filename': 'LightlineFilename', 'lsp': 'LspStatus'}
 let g:lightline.tabline          = {'left': [['buffers']], 'right': []}
 
 " Enable bufferline
 let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
 let g:lightline.component_type   = {'buffers': 'tabsel'}
 
+" LSP Errors and Warnings 
+function! LspStatus() abort
+    let sl = ''
+    if luaeval('not vim.tbl_isempty(vim.lsp.buf_get_clients(0))')
+        let sl.='E:'
+        let sl.=luaeval("vim.lsp.diagnostic.get_count(0, [[Error]])")
+        let sl.=' W:'
+        let sl.=luaeval("vim.lsp.diagnostic.get_count(0, [[Warning]])")
+    endif
+    return sl
+endfunction
+
+" Show filename in lightline 
 function! LightlineFilename()
   return expand('%:t') !=# '' ? @% : '[new file]'
 endfunction
@@ -97,6 +113,7 @@ let g:rust_clip_command = 'xclip -selection clipboard'
 
 " Open hotkeys
 map <C-p> :GFiles<CR>
+map <C-P> :Files<CR>
 nmap <leader>; :Buffers<CR>
 
 " Use <Tab> and <S-Tab> to navigate through popup menu
@@ -126,21 +143,19 @@ nnoremap <silent> g] <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
 
 " Enable type inlay hints
-autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
-\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment" }
+autocmd BufEnter,BufWinEnter,InsertLeave,TabEnter,BufWritePost *.rs :lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "NonText", enabled = {"ChainingHint", "TypeHint", "ParameterHint"} }
 
 " Control keymaps
-
 " Esc
-nnoremap <A-q> <Esc>
-inoremap <A-q> <Esc>
-vnoremap <A-q> <Esc>
-snoremap <A-q> <Esc>
-xnoremap <A-q> <Esc>
-cnoremap <A-q> <C-c>
-onoremap <A-q> <Esc>
-lnoremap <A-q> <Esc>
-tnoremap <A-q> <Esc>
+nnoremap <C-c> <Esc>
+inoremap <C-c> <Esc>
+vnoremap <C-c> <Esc>
+snoremap <C-c> <Esc>
+xnoremap <C-c> <Esc>
+cnoremap <C-c> <Esc>
+onoremap <C-c> <Esc>
+lnoremap <C-c> <Esc>
+tnoremap <C-c> <Esc>
 
 " Very magic by default
 nnoremap ? ?\v
@@ -167,7 +182,11 @@ set formatoptions=tcrqnj
 set incsearch
 set ignorecase
 set smartcase
+set tabstop=4
+set shiftwidth=4
+set expandtab
 set number
+set showtabline=2
 set relativenumber
 set diffopt+=algorithm:patience
 set diffopt+=indent-heuristic
@@ -190,6 +209,8 @@ nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
 " Left and right can switch buffers
+nnoremap <up> <nop>
+nnoremap <down> <nop>
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
 
