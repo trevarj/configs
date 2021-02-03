@@ -29,6 +29,7 @@ Plug 'mengelbrecht/lightline-bufferline'
 Plug 'machakann/vim-highlightedyank'
 Plug 'andymass/vim-matchup'
 Plug 'qpkorr/vim-bufkill'
+Plug 'kosayoda/nvim-lightbulb'
 
 " Syntactic language support
 Plug 'cespare/vim-toml'
@@ -71,6 +72,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     update_in_insert = true,
   }
 )
+
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
 EOF
 
 "Lightline
