@@ -23,8 +23,11 @@ Plug 'morhetz/gruvbox'
 Plug 'airblade/vim-gitgutter'
 
 " Fuzzy
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 " GUI enhancements
 Plug 'itchyny/lightline.vim'
@@ -70,13 +73,12 @@ lsp_status.register_progress()
 -- function to attach completion when setting up lsp
 local on_attach = function(client)
     require'completion'.on_attach(client)
+    lsp_status.on_attach(client)
 end
 
 -- Enable rust_analyzer
-nvim_lsp.rust_analyzer.setup({ on_attach=on_attach })
-
 nvim_lsp.rust_analyzer.setup({
-  on_attach = lsp_status.on_attach,
+  on_attach = on_attach,
   capabilities = lsp_status.capabilities
 })
 
@@ -130,9 +132,14 @@ let g:rustfmt_fail_silently = 0
 let g:rust_clip_command = 'xclip -selection clipboard'
 
 " Open hotkeys
-map <C-p> :GFiles<CR>
-map <C-P> :Files<CR>
-nmap <leader>; :Buffers<CR>
+" map <C-p> :GFiles<CR>
+" map <C-P> :Files<CR>
+" nmap <leader>; :Buffers<CR>
+nnoremap <C-p> <cmd>Telescope git_files<cr>
+nnoremap <C-P> <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 "Search
 map <leader>f :Ag<CR>
@@ -236,7 +243,7 @@ nnoremap <A-l> <C-w>l
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> :bp<CR>
-nnoremap <right> :bn<CR>
+noremap <right> :bn<CR>
 
 " Terminal
 nnoremap <C-T> :split\|:term<CR>i
