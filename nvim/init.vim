@@ -244,6 +244,7 @@ nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> :bp<CR>
 noremap <right> :bn<CR>
+noremap <leader>c :BD<CR>
 
 " Terminal
 nnoremap <C-T> :split\|:term<CR>i
