@@ -1,5 +1,0 @@
-{
-	"rust-analyzer.hoverActions.linksInHover": true,
-	"diagnostic.virtualText": true,
-	"diagnostic.virtualTextCurrentLineOnly": false
-}

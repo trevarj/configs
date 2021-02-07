@@ -4,10 +4,11 @@ call plug#begin('~/.vim/plugged')
 Plug 'neovim/nvim-lspconfig'
 
 " Extensions to built-in LSP, for example, providing type inlay hints
-Plug 'tjdevries/lsp_extensions.nvim'
+" Plug 'tjdevries/lsp_extensions.nvim'
+Plug '~/Workspace/lsp_extensions.nvim'
 
 " Autocompletion framework for built-in LSP
-Plug 'nvim-lua/completion-nvim'
+Plug 'hrsh7th/nvim-compe'
 
 " LSP Status
 Plug 'nvim-lua/lsp-status.nvim'
@@ -31,11 +32,11 @@ Plug 'nvim-telescope/telescope.nvim'
 
 " GUI enhancements
 Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
+Plug 'akinsho/nvim-bufferline.lua' " Requires a Nerd Font
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'andymass/vim-matchup'
 Plug 'qpkorr/vim-bufkill'
 Plug 'kosayoda/nvim-lightbulb'
+Plug 'glepnir/lspsaga.nvim'
 
 " Syntactic language support
 Plug 'cespare/vim-toml'
@@ -43,9 +44,10 @@ Plug 'stephpy/vim-yaml'
 Plug 'rust-lang/rust.vim'
 Plug 'tpope/vim-commentary'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'hrsh7th/vim-vsnip'
 
 " Semantics
-Plug 'jiangmiao/auto-pairs'
+Plug 'Raimondi/delimitMate'
 
 call plug#end()
 
@@ -61,7 +63,9 @@ colorscheme gruvbox
 lua <<EOF
 
 -- nvim_lsp object
-local nvim_lsp = require('lspconfig')
+local nvim_lsp = require 'lspconfig'
+local saga = require 'lspsaga'
+saga.init_lsp_saga()
 
 -- LSP status for display in statusline
 local lsp_status = require('lsp-status')
@@ -70,16 +74,52 @@ lsp_status.register_progress()
     status_symbol = '',
 })
 
--- function to attach completion when setting up lsp
+require'compe'.setup {
+  enabled = true;
+  autocomplete = true;
+  debug = false;
+  min_length = 1;
+  preselect = 'enable';
+  throttle_time = 80;
+  source_timeout = 200;
+  incomplete_delay = 400;
+  max_abbr_width = 100;
+  max_kind_width = 100;
+  max_menu_width = 100;
+
+  source = {
+    path = true;
+    buffer = true;
+    calc = true;
+    vsnip = true;
+    nvim_lsp = true;
+    nvim_lua = true;
+    spell = true;
+    tags = true;
+    treesitter = true;
+  };
+}
+
+-- function to attach status when setting up lsp
 local on_attach = function(client)
-    require'completion'.on_attach(client)
     lsp_status.on_attach(client)
 end
 
+-- Set default client capabilities plus window/workDoneProgress
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = vim.tbl_extend('keep', capabilities or {}, lsp_status.capabilities)
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 -- Enable rust_analyzer
 nvim_lsp.rust_analyzer.setup({
   on_attach = on_attach,
-  capabilities = lsp_status.capabilities
+  capabilities = capabilities
+})
+
+require('bufferline').setup{}
+
+nvim_lsp.sumneko_lua.setup({
+    on_attach = on_attach,
+    capabilities = capabilities
 })
 
 -- Enable diagnostics
@@ -98,24 +138,8 @@ require'nvim-treesitter.configs'.setup {
     enable = true,              -- false will disable the whole extension
   },
 }
-
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
 EOF
-
-"Lightline
-let g:lightline#bufferline#show_number  = 0
-let g:lightline#bufferline#shorten_path = 0
-let g:lightline#bufferline#unnamed      = '[No Name]'
-
-let g:lightline = {}
-let g:lightline.colorscheme = 'gruvbox'
-let g:lightline.active = {'left': [[ 'mode', 'paste' ], [ 'lsp' ]] }
-let g:lightline.component_function = {'lsp': 'LspStatus'}
-let g:lightline.tabline          = {'left': [['buffers', 'readonly']], 'right': []}
-
-" Enable bufferline
-let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-let g:lightline.component_type   = {'buffers': 'tabsel'}
 
 " LSP Status 
 function! LspStatus() abort
@@ -130,6 +154,11 @@ let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
 let g:rustfmt_fail_silently = 0
 let g:rust_clip_command = 'xclip -selection clipboard'
+
+let g:lightline = {'enable': {'tabline': 0}}
+let g:lightline.colorscheme = 'gruvbox'
+let g:lightline.active = {'left': [[ 'mode', 'paste' ], [ 'lsp' ]] }
+let g:lightline.component_function = {'lsp': 'LspStatus'}
 
 " Open hotkeys
 " map <C-p> :GFiles<CR>
@@ -148,30 +177,40 @@ map <leader>f :Ag<CR>
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-" use <Tab> as trigger keys
-imap <Tab> <Plug>(completion_smart_tab)
-imap <S-Tab> <Plug>(completion_smart_s_tab)
+inoremap <silent><expr> <C-Space> compe#complete()
+inoremap <silent><expr> <CR>      compe#confirm({ 'keys': "\<Plug>delimitMateCR", 'mode': '' })
+inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 
-" Code navigation shortcuts
-nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
-nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
-nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
-nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
-nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+" Code Actions
+nnoremap <silent><leader>ca :Lspsaga code_action<CR>
+vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
+" Hover doc, enabled on CursorHold
+" nnoremap <silent>K :Lspsaga hover_doc<CR>
+" Signature help
+nnoremap <silent> gs :Lspsaga signature_help<CR>
+" Rename 
+nnoremap <silent>gr :Lspsaga rename<CR>
+" Definition preview
+nnoremap <silent> gd :Lspsaga preview_definition<CR>
+
 " Goto previous/next diagnostic warning/error
-nnoremap <silent> g[ <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
-nnoremap <silent> g] <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap <silent> [e :Lspsaga diagnostic_jump_next<CR>
+nnoremap <silent> ]e :Lspsaga diagnostic_jump_prev<CR>
 
 " Show diagnostic popup on cursor hold
-autocmd CursorHold * lua vim.defer_fn(function() vim.lsp.diagnostic.show_line_diagnostics() end, 2000)
+" using regular LSP diagnostics for now, which are inline virtual text opposed
+" to a popup from lspsaga
+" autocmd CursorHold * lua vim.defer_fn(function() require'lspsaga.diagnostic'.show_line_diagnostics() end, 2000)
+
+" Show definition on cursor hold
+" autocmd CursorHold * lua vim.defer_fn(function() require'lspsaga.provider'.preview_definition() end, 2000)
+
+" Show doc on cursor hold
+autocmd CursorHold * lua vim.defer_fn(function() require('lspsaga.hover').render_hover_doc() end, 5000)
+
 
 " Enable type inlay hints
-autocmd BufEnter,BufWinEnter,InsertLeave,TabEnter,BufWritePost *.rs :lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "NonText", enabled = {"ChainingHint", "TypeHint", "ParameterHint"} }
+autocmd BufEnter,BufWinEnter,InsertLeave,TabEnter,BufWritePost *.rs :lua require'lsp_extensions'.rust_analyzer.inlay_hints{ prefix = '', highlight = "NonText", enabled = {"ChainingHint", "TypeHint", "ParameterHint"} }
 
 " Highlight on yank
 autocmd TextYankPost * silent! lua vim.highlight.on_yank()
@@ -198,7 +237,7 @@ cnoremap %s/ %sm/
 " menuone: popup even when there's only one match
 " noinsert: Do not insert text until a selection is made
 " noselect: Do not select, force user to select one from the menu
-set completeopt=menuone,noinsert,noselect
+set completeopt=menu,menuone,noselect
 " Avoid showing extra messages when using completion
 set shortmess+=c
 " Set updatetime for CursorHold
@@ -222,6 +261,7 @@ set relativenumber
 set diffopt+=algorithm:patience
 set diffopt+=indent-heuristic
 set showcmd
+set noshowmode
 set mouse=a
 set guicursor=a:block-blinkon0,i:blinkwait50-blinkon200-blinkoff150
 
