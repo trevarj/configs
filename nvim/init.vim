@@ -2,26 +2,16 @@ call plug#begin('~/.vim/plugged')
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
-
-" Extensions to built-in LSP, for example, providing type inlay hints
-" Plug 'tjdevries/lsp_extensions.nvim'
-Plug '~/Workspace/lsp_extensions.nvim'
-
-" Autocompletion framework for built-in LSP
-Plug 'hrsh7th/nvim-compe'
-
-" LSP Status
-Plug 'nvim-lua/lsp-status.nvim'
-
-" LSP Installer
-" LspInstall rust_analyzer
-Plug 'anott03/nvim-lspinstall'
-
-" Colors
-Plug 'morhetz/gruvbox'
+Plug 'tjdevries/lsp_extensions.nvim'
+" Plug '~/Workspace/lsp_extensions.nvim'
+Plug 'hrsh7th/nvim-compe' " Autocompletion framework for built-in LSP
+Plug 'nvim-lua/lsp-status.nvim' " LSP Status
+Plug 'anott03/nvim-lspinstall' " LSP Installer
 
 "Git
 Plug 'airblade/vim-gitgutter'
+
+" Session
 
 " Fuzzy
 " Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -37,16 +27,21 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'qpkorr/vim-bufkill'
 Plug 'kosayoda/nvim-lightbulb'
 Plug 'glepnir/lspsaga.nvim'
+Plug 'morhetz/gruvbox'
+Plug 'kyazdani42/nvim-tree.lua'
 
 " Syntactic language support
 Plug 'cespare/vim-toml'
 Plug 'stephpy/vim-yaml'
 Plug 'rust-lang/rust.vim'
 Plug 'tpope/vim-commentary'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'hrsh7th/vim-vsnip'
 
 " Semantics
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" Plug '~/Workspace/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+" Plug 'romgrk/nvim-treesitter-context'
 Plug 'Raimondi/delimitMate'
 
 call plug#end()
@@ -54,6 +49,7 @@ call plug#end()
 syntax enable
 filetype plugin indent on
 
+let g:vimsyn_embed = 'l'
 set termguicolors
 let g:gruvbox_contrast_dark='medium'
 colorscheme gruvbox
@@ -117,10 +113,36 @@ nvim_lsp.rust_analyzer.setup({
 
 require('bufferline').setup{}
 
-nvim_lsp.sumneko_lua.setup({
-    on_attach = on_attach,
-    capabilities = capabilities
-})
+-- set the path to the sumneko installation; if you previously installed via the now deprecated :LspInstall, use
+local sumneko_root_path = vim.fn.getenv("HOME").."/.local/share/nvim/lspinstall/lua-language-server"
+local sumneko_binary = sumneko_root_path.."/bin/Linux/lua-language-server"
+
+require'lspconfig'.sumneko_lua.setup {
+  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = vim.split(package.path, ';'),
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = {
+          [vim.fn.expand('$VIMRUNTIME/lua')] = true,
+          [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
+        },
+      },
+    },
+  },
+}
 
 -- Enable diagnostics
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
@@ -138,6 +160,7 @@ require'nvim-treesitter.configs'.setup {
     enable = true,              -- false will disable the whole extension
   },
 }
+
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
 EOF
 
@@ -159,6 +182,30 @@ let g:lightline = {'enable': {'tabline': 0}}
 let g:lightline.colorscheme = 'gruvbox'
 let g:lightline.active = {'left': [[ 'mode', 'paste' ], [ 'lsp' ]] }
 let g:lightline.component_function = {'lsp': 'LspStatus'}
+
+let g:nvim_tree_show_icons = {'git': 1, 'folders': 1, 'files': 1}
+let g:nvim_tree_bindings = {
+    \ 'edit':            ['<CR>', 'o'],
+    \ 'edit_vsplit':     '<C-v>',
+    \ 'edit_split':      '<C-x>',
+    \ 'edit_tab':        '<C-t>',
+    \ 'close_node':      ['<S-CR>', '<BS>'],
+    \ 'toggle_ignored':  'I',
+    \ 'toggle_dotfiles': 'H',
+    \ 'refresh':         'R',
+    \ 'preview':         '<Tab>',
+    \ 'cd':              '<C-]>',
+    \ 'create':          'a',
+    \ 'remove':          'd',
+    \ 'rename':          'r',
+    \ 'cut':             'x',
+    \ 'copy':            'c',
+    \ 'paste':           'p',
+    \ 'prev_git_item':   '[c',
+    \ 'next_git_item':   ']c',
+    \ 'dir_up':          '-',
+    \ 'close':           'q',
+    \ }
 
 " Open hotkeys
 " map <C-p> :GFiles<CR>
@@ -196,6 +243,11 @@ nnoremap <silent> gd :Lspsaga preview_definition<CR>
 " Goto previous/next diagnostic warning/error
 nnoremap <silent> [e :Lspsaga diagnostic_jump_next<CR>
 nnoremap <silent> ]e :Lspsaga diagnostic_jump_prev<CR>
+
+nnoremap <silent> gh <cmd>lua require'lspsaga.provider'.lsp_finder()<CR>
+
+noremap <leader>gd <Cmd>lua vim.lsp.buf.definition()<CR>
+noremap <leader>gD <Cmd>lua vim.lsp.buf.declaration()<CR>
 
 " Show diagnostic popup on cursor hold
 " using regular LSP diagnostics for now, which are inline virtual text opposed
@@ -279,13 +331,24 @@ nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
+" Hardmode
+map <up> <nop>
+map <down> <nop>
+imap <up> <nop>
+imap <down> <nop>
+imap <left> <nop>
+imap <right> <nop>
+map <del> <nop>
+imap <del> <nop>
 " Left and right can switch buffers
-nnoremap <up> <nop>
-nnoremap <down> <nop>
 nnoremap <left> :bp<CR>
-noremap <right> :bn<CR>
+nnoremap <right> :bn<CR>
 noremap <leader>c :BD<CR>
 
 " Terminal
 nnoremap <C-T> :split\|:term<CR>i
 tnoremap <Esc> <C-\><C-n>
+
+" Tree 
+nnoremap <C-n> :NvimTreeToggle<CR>
+nnoremap <leader>tr :NvimTreeRefresh<CR>
