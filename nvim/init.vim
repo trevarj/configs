@@ -2,8 +2,8 @@ call plug#begin('~/.vim/plugged')
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
-Plug 'tjdevries/lsp_extensions.nvim'
-" Plug '~/Workspace/lsp_extensions.nvim'
+" Plug 'tjdevries/lsp_extensions.nvim'
+Plug '~/Workspace/lsp_extensions.nvim'
 Plug 'hrsh7th/nvim-compe' " Autocompletion framework for built-in LSP
 Plug 'nvim-lua/lsp-status.nvim' " LSP Status
 Plug 'anott03/nvim-lspinstall' " LSP Installer
@@ -207,6 +207,16 @@ let g:nvim_tree_bindings = {
     \ 'close':           'q',
     \ }
 
+" Gitgutter 
+let g:gitgutter_map_keys = 0
+let g:gitgutter_max_signs = 10000
+let g:gitgutter_sign_added = '▎'
+let g:gitgutter_sign_modified = '▎'
+let g:gitgutter_sign_modified_removed = '▎'
+let g:gitgutter_sign_removed = '▁'
+let g:gitgutter_sign_removed_first_line = '▔'
+
+" let g:blameLineVirtualTextFormat = '[%s]'
 " Open hotkeys
 " map <C-p> :GFiles<CR>
 " map <C-P> :Files<CR>
@@ -294,6 +304,7 @@ set completeopt=menu,menuone,noselect
 set shortmess+=c
 " Set updatetime for CursorHold
 " 300ms of no cursor movement to trigger CursorHold
+set hidden
 set updatetime=300
 set signcolumn=yes
 set scrolloff=10
@@ -346,7 +357,7 @@ nnoremap <right> :bn<CR>
 noremap <leader>c :BD<CR>
 
 " Terminal
-nnoremap <C-T> :split\|:term<CR>i
+nnoremap <C-T> :split\|:term<CR>z20<CR>i
 tnoremap <Esc> <C-\><C-n>
 
 " Tree 
