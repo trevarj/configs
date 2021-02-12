@@ -54,115 +54,8 @@ set termguicolors
 let g:gruvbox_contrast_dark='medium'
 colorscheme gruvbox
 
-" Configure LSP
-" https://github.com/neovim/nvim-lspconfig#rust_analyzer
-lua <<EOF
-
--- nvim_lsp object
-local nvim_lsp = require 'lspconfig'
-local saga = require 'lspsaga'
-saga.init_lsp_saga()
-
--- LSP status for display in statusline
-local lsp_status = require('lsp-status')
-lsp_status.register_progress()
-    lsp_status.config({
-    status_symbol = '',
-})
-
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    vsnip = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    spell = true;
-    tags = true;
-    treesitter = true;
-  };
-}
-
--- function to attach status when setting up lsp
-local on_attach = function(client)
-    lsp_status.on_attach(client)
-end
-
--- Set default client capabilities plus window/workDoneProgress
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = vim.tbl_extend('keep', capabilities or {}, lsp_status.capabilities)
-capabilities.textDocument.completion.completionItem.snippetSupport = true
--- Enable rust_analyzer
-nvim_lsp.rust_analyzer.setup({
-  on_attach = on_attach,
-  capabilities = capabilities
-})
-
-require('bufferline').setup{}
-
--- set the path to the sumneko installation; if you previously installed via the now deprecated :LspInstall, use
-local sumneko_root_path = vim.fn.getenv("HOME").."/.local/share/nvim/lspinstall/lua-language-server"
-local sumneko_binary = sumneko_root_path.."/bin/Linux/lua-language-server"
-
-require'lspconfig'.sumneko_lua.setup {
-  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = vim.split(package.path, ';'),
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = {'vim'},
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = {
-          [vim.fn.expand('$VIMRUNTIME/lua')] = true,
-          [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
-        },
-      },
-    },
-  },
-}
-
--- Enable diagnostics
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = true,
-    signs = true,
-    update_in_insert = true,
-  }
-)
-
--- Tree sitter
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "rust", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-  },
-}
-
-vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
-EOF
+" Source the lua init
+call v:lua.require('init')
 
 " LSP Status 
 function! LspStatus() abort
@@ -270,6 +163,8 @@ noremap <leader>gD <Cmd>lua vim.lsp.buf.declaration()<CR>
 " Show doc on cursor hold
 autocmd CursorHold * lua vim.defer_fn(function() require('lspsaga.hover').render_hover_doc() end, 5000)
 
+" Lightbulb
+autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 
 " Enable type inlay hints
 autocmd BufEnter,BufWinEnter,InsertLeave,TabEnter,BufWritePost *.rs :lua require'lsp_extensions'.rust_analyzer.inlay_hints{ prefix = '', highlight = "NonText", enabled = {"ChainingHint", "TypeHint", "ParameterHint"} }
