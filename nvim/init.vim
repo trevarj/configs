@@ -14,17 +14,16 @@ Plug 'airblade/vim-gitgutter'
 " Session
 
 " Fuzzy
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Plug 'junegunn/fzf.vim'
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+" Plug 'nvim-lua/popup.nvim'
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
 
 " GUI enhancements
 Plug 'itchyny/lightline.vim'
 Plug 'akinsho/nvim-bufferline.lua' " Requires a Nerd Font
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'qpkorr/vim-bufkill'
 Plug 'kosayoda/nvim-lightbulb'
 Plug 'glepnir/lspsaga.nvim'
 Plug 'morhetz/gruvbox'
@@ -111,14 +110,14 @@ let g:gitgutter_sign_removed_first_line = '▔'
 
 " let g:blameLineVirtualTextFormat = '[%s]'
 " Open hotkeys
-" map <C-p> :GFiles<CR>
-" map <C-P> :Files<CR>
-" nmap <leader>; :Buffers<CR>
-nnoremap <C-p> <cmd>Telescope git_files<cr>
-nnoremap <C-P> <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+map <C-p> :GFiles<CR>
+map <C-P> :Files<CR>
+nmap <leader>; :Buffers<CR>
+" nnoremap <C-p> <cmd>Telescope git_files<cr>
+" nnoremap <C-P> <cmd>Telescope find_files<cr>
+" nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+" nnoremap <leader>fb <cmd>Telescope buffers<cr>
+" nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 "Search
 map <leader>f :Ag<CR>
@@ -188,6 +187,8 @@ tnoremap <C-c> <Esc>
 nnoremap ? ?\v
 nnoremap / /\v
 cnoremap %s/ %sm/
+" Clear highlights after search
+nnoremap <leader>nh :noh<CR>
 
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -249,7 +250,7 @@ imap <del> <nop>
 " Left and right can switch buffers
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
-noremap <leader>c :BD<CR>
+noremap <leader>c :bd<CR>
 
 " Terminal
 nnoremap <C-T> :split\|:term<CR>z20<CR>i
