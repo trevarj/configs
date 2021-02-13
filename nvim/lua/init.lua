@@ -54,7 +54,7 @@ nvim_lsp.rust_analyzer.setup({
 require('bufferline').setup{
         options = {
         view = "default",
-        numbers = "ordinal",
+        numbers = "none",
         number_style = "",
         mappings = true,
         buffer_close_icon= '',

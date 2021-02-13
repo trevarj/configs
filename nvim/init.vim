@@ -151,6 +151,8 @@ nnoremap <silent> gh <cmd>lua require'lspsaga.provider'.lsp_finder()<CR>
 noremap <leader>gd <Cmd>lua vim.lsp.buf.definition()<CR>
 noremap <leader>gD <Cmd>lua vim.lsp.buf.declaration()<CR>
 
+nnoremap <silent> <leader>ff :Lspsaga lsp_finder<CR>
+
 " Show diagnostic popup on cursor hold
 " using regular LSP diagnostics for now, which are inline virtual text opposed
 " to a popup from lspsaga
@@ -160,7 +162,7 @@ noremap <leader>gD <Cmd>lua vim.lsp.buf.declaration()<CR>
 " autocmd CursorHold * lua vim.defer_fn(function() require'lspsaga.provider'.preview_definition() end, 2000)
 
 " Show doc on cursor hold
-autocmd CursorHold * lua vim.defer_fn(function() require('lspsaga.hover').render_hover_doc() end, 5000)
+" autocmd CursorHold * lua vim.defer_fn(function() require('lspsaga.hover').render_hover_doc() end, 5000)
 
 " Lightbulb
 autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
@@ -188,7 +190,7 @@ nnoremap ? ?\v
 nnoremap / /\v
 cnoremap %s/ %sm/
 " Clear highlights after search
-nnoremap <leader>nh :noh<CR>
+nnoremap <silent> <leader>nh :noh<CR>
 
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -248,14 +250,15 @@ imap <right> <nop>
 map <del> <nop>
 imap <del> <nop>
 " Left and right can switch buffers
-nnoremap <left> :bp<CR>
-nnoremap <right> :bn<CR>
-noremap <leader>c :bd<CR>
+nnoremap <silent> <left> :bp<CR>
+nnoremap <silent> <right> :bn<CR>
+noremap <silent> <leader>c :bd<CR>
 
 " Terminal
-nnoremap <C-T> :split\|:term<CR>z20<CR>i
+nnoremap <silent> <C-T> :split\|:term<CR>z20<CR>i
 tnoremap <Esc> <C-\><C-n>
+tnoremap <C-c> <C-\><C-n>
 
 " Tree 
-nnoremap <C-n> :NvimTreeToggle<CR>
-nnoremap <leader>tr :NvimTreeRefresh<CR>
+nnoremap <silent> <C-n> :NvimTreeToggle<CR>
+nnoremap <silent> <leader>tr :NvimTreeRefresh<CR>
