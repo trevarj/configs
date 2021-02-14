@@ -65,6 +65,8 @@ let g:rustfmt_autosave = 1
 
 let g:gruvbox_contrast_dark='medium'
 
+let g:airline_powerline_fonts = 1
+
 "
 " SET OPTIONS
 "
