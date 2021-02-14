@@ -28,7 +28,8 @@ call plug#end()
 colorscheme gruvbox
 
 source $VIMRUNTIME/defaults.vim
-source ./coc-conf.vim
+" Create symlink here
+" source ~/.vim/plugin/coc-conf.vim
 
 " KEY BINDINGS
 map <c-c> <esc>
