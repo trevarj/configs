@@ -20,6 +20,7 @@ Plug 'ryanoasis/vim-devicons'
 " Language support
 Plug 'rust-lang/rust.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'cespare/vim-toml'
 
 " Initialize plugin system
 call plug#end()
@@ -52,6 +53,7 @@ nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>0 <Plug>AirlineSelectTab0
 nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>= <Plug>AirlineSelectNextTab
+nmap <leader>q :bd<CR>
 
 " PLUGIN CONFIGS
 let g:airline#extensions#tabline#enabled = 1
@@ -89,6 +91,8 @@ set relativenumber
 set showtabline=2
 set tabstop=4
 set expandtab
+set splitbelow
+set splitright
 " Search
 set ignorecase
 set smartcase
