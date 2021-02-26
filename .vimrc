@@ -19,7 +19,7 @@ Plug 'ryanoasis/vim-devicons'
 
 " Language support
 Plug 'rust-lang/rust.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'cespare/vim-toml'
 
 " Initialize plugin system
