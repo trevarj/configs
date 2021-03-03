@@ -9,7 +9,11 @@ bindkey -v
 zstyle :compinstall filename '/home/trevor/.zshrc'
 zmodload zsh/complist
 zstyle ':completion:*' menu yes select
+
 bindkey -M menuselect '?' history-incremental-search-forward
+
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+bindkey '^ ' autosuggest-accept
 
 TERM=alacritty
 EDITOR=vim
@@ -20,6 +24,7 @@ compinit
 
 alias ls='exa'
 
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 eval "$(starship init zsh)"
